@@ -5,7 +5,7 @@ import { ethers } from 'ethers'
 const CONTRACT = '0x'
 const RPC = 'https://rpc.ankr.com/eth'
 const MINT_PRICE = 0
-const MINT_MAX = 100
+const MINT_MAX = 200
 
 const PARAMS = [
   {
@@ -130,13 +130,13 @@ export const MintSection = () => {
   }, [])
   return (
     <div id="mint" className="p-5 py-20 bg-black flex flex-col mx-auto my-auto">
-      <div className="container mx-auto">
+      <div className="container mx-auto text-center">
         <h2>Mint</h2>
         <p className="mb-5">
           Mint our latest NFT collection, <strong>{latestMintName}</strong>.
         </p>
         <div
-          className="bg-slate-900 bg-opacity-75 backdrop-blur-xl p-5 rounded-xl border-2 mx-auto"
+          className=" bg-opacity-75 backdrop-blur-xl p-5 rounded-xl border-2 mx-auto"
           style={{ width: 700 }}
         >
           <div className="p-1 font-extrabold">
