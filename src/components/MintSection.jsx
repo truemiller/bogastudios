@@ -1,6 +1,6 @@
 import { useMemo, useState, useEffect } from 'react'
 import abi from '../abi/abi.json'
-import { ethers, JsonRpcProvider, JsonRpcSigner } from 'ethers'
+import { ethers } from 'ethers'
 
 const CONTRACT = '0x'
 const RPC = 'https://rpc.ankr.com/eth'
@@ -132,7 +132,7 @@ export const MintSection = () => {
     <div id="mint" className="p-5 py-20 bg-black flex flex-col mx-auto my-auto">
       <div className="container mx-auto">
         <h2>Mint</h2>
-        <p>
+        <p className="mb-5">
           Mint our latest NFT collection, <strong>{latestMintName}</strong>.
         </p>
         <div
