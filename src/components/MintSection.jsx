@@ -4,7 +4,7 @@ import { ethers } from 'ethers'
 
 const CONTRACT = '0x'
 const RPC = 'https://rpc.ankr.com/eth'
-const MINT_PRICE = 0
+const MINT_PRICE = 0.01
 const MINT_MAX = 200
 
 const PARAMS = [
@@ -26,6 +26,10 @@ export const MintSection = () => {
   const [provider, setProvider] = useState(null)
   const [signer, setSigner] = useState(null)
   const [totalSupply, setTotalSupply] = useState(0)
+  const [quantity, setQuantity] = useState(1)
+  const totalPrice = useMemo(() => (quantity * MINT_PRICE).toFixed(2), [
+    quantity,
+  ])
   const [isPublicMintEnabled, setIsPublicMintEnabled] = useState(false)
 
   const isSoldOut = totalSupply >= MINT_MAX
@@ -148,9 +152,28 @@ export const MintSection = () => {
               type="text"
               className="w-full rounded-xl p-3 bg-slate-700 text-right"
               placeholder="Price"
-              value={'Free'}
+              value={totalPrice}
               disabled
             />
+            <div className="flex justify-between">
+              <button
+                className="bg-red-600"
+                onClick={() => {
+                  setQuantity((prev) => (prev - 1 < 0 ? prev : prev - 1))
+                }}
+              >
+                -
+              </button>
+              <span className="text-4xl font-extrabold">{quantity}</span>
+              <button
+                className="bg-green-600"
+                onClick={() => {
+                  setQuantity((prev) => (prev + 1 > MINT_MAX ? prev : prev + 1))
+                }}
+              >
+                +
+              </button>
+            </div>
             {isMintable && (
               <button
                 onClick={handleMint}
