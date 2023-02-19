@@ -9,6 +9,7 @@ import {
   CHAIN_ID,
   CHAIN_NAME,
   BLOCK_EXPLORER,
+  MINT_NAME,
 } from "../constants/config";
 
 const PARAMS = [
@@ -22,8 +23,6 @@ const PARAMS = [
 
 const defaultProvider = new ethers.providers.JsonRpcProvider(RPC);
 const defaultContract = new ethers.Contract(CONTRACT, abi, defaultProvider);
-
-const latestMintName = "Dogs";
 
 declare var window: {
   ethereum: any;
@@ -148,14 +147,14 @@ export const MintSection = memo(() => {
       <div className="container mx-auto text-center">
         <h2>Mint</h2>
         <p className="mb-5">
-          Mint our latest NFT collection, <strong>{latestMintName}</strong>.
+          Mint our latest NFT collection, <strong>{MINT_NAME}</strong>.
         </p>
         <div
           className=" bg-opacity-75 backdrop-blur-xl p-5 rounded-xl border-2 mx-auto"
           style={{ width: 700 }}
         >
           <div className="p-1 font-extrabold">
-            Mint BOGA {latestMintName} ({totalSupply}/{MINT_MAX})
+            Mint BOGA {MINT_NAME} ({totalSupply}/{MINT_MAX})
           </div>
           <div className="rounded-xl flex flex-col gap-3">
             <span className="absolute mt-3 ml-3">Price (ETH)</span>

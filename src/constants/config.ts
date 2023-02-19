@@ -8,6 +8,8 @@ export const CONTRACT: string = '0x'
 export const MINT_MAX: number = 200
 export const MINT_PRICE: number = 0.01
 
+export const MINT_NAME: string = 'Dogs'
+
 // export const RPC = 'https://api.avax-test.network/ext/bc/C/rpc'
 // export const CHAIN_ID = '0x' + (43113).toString(16)
 // export const CHAIN_NAME = 'Avalanche FUJI'
