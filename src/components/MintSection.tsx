@@ -1,6 +1,6 @@
-import { useMemo, useState, useEffect, useCallback, memo } from 'react'
-import abi from '../abi/abi.json'
-import { ethers } from 'ethers'
+import { useMemo, useState, useEffect, useCallback, memo } from "react";
+import abi from "../abi/abi.json";
+import { ethers } from "ethers";
 import {
   MINT_MAX,
   RPC,
@@ -9,7 +9,7 @@ import {
   CHAIN_ID,
   CHAIN_NAME,
   BLOCK_EXPLORER,
-} from '../constants/config'
+} from "../constants/config";
 
 const PARAMS = [
   {
@@ -18,122 +18,130 @@ const PARAMS = [
     rpcUrls: [RPC],
     blockExplorer: [BLOCK_EXPLORER],
   },
-]
+];
 
-const defaultProvider = new ethers.providers.JsonRpcProvider(RPC)
-const defaultContract = new ethers.Contract(CONTRACT, abi, defaultProvider)
+const defaultProvider = new ethers.providers.JsonRpcProvider(RPC);
+const defaultContract = new ethers.Contract(CONTRACT, abi, defaultProvider);
 
-const latestMintName = 'Dogs'
+const latestMintName = "Dogs";
+
+declare var window: {
+  ethereum: any;
+};
 
 export const MintSection = memo(() => {
-  const [connected, setConnected] = useState(false)
-  const [provider, setProvider] = useState(null)
-  const [signer, setSigner] = useState(null)
-  const [totalSupply, setTotalSupply] = useState(0)
-  const [quantity, setQuantity] = useState(1)
-  const totalPrice = useMemo(() => (quantity * MINT_PRICE).toFixed(2), [
-    quantity,
-  ])
-  const [isPublicMintEnabled, setIsPublicMintEnabled] = useState(false)
+  const [connected, setConnected] = useState(false);
+  const [provider, setProvider] =
+    useState<ethers.providers.Web3Provider | null>(null);
+  const [signer, setSigner] = useState<ethers.providers.JsonRpcSigner | null>(
+    null
+  );
+  const [totalSupply, setTotalSupply] = useState(0);
+  const [quantity, setQuantity] = useState(1);
+  const totalPrice = useMemo(
+    () => (quantity * MINT_PRICE).toFixed(2),
+    [quantity]
+  );
+  const [isPublicMintEnabled, setIsPublicMintEnabled] = useState(false);
 
-  const isSoldOut = totalSupply >= MINT_MAX
-  const isMintable = !isSoldOut && isPublicMintEnabled
+  const isSoldOut = totalSupply >= MINT_MAX;
+  const isMintable = !isSoldOut && isPublicMintEnabled;
 
   const contract = useMemo(() => {
-    if (!connected) return
-    if (!provider) return
-    if (!signer) return
-    const contract = new ethers.Contract(CONTRACT, abi, signer)
-    return contract
-  }, [connected, provider, signer])
+    if (!connected) return;
+    if (!provider) return;
+    if (!signer) return;
+    const contract = new ethers.Contract(CONTRACT, abi, signer);
+    return contract;
+  }, [connected, provider, signer]);
 
   const preConnect = async () => {
-    if (!window?.ethereum) return
+    if (!window?.ethereum) return;
     await window.ethereum
-      .request({ method: 'eth_accounts' })
-      .then(async (r) => {
-        setConnected(!!r[0])
-        setProvider(new ethers.providers.Web3Provider(window.ethereum))
+      .request({ method: "eth_accounts" })
+      .then(async (r: any) => {
+        setConnected(!!r[0]);
+        setProvider(new ethers.providers.Web3Provider(window.ethereum));
         setSigner(
-          await new ethers.providers.Web3Provider(window.ethereum).getSigner(),
-        )
-      })
-  }
+          await new ethers.providers.Web3Provider(window.ethereum).getSigner()
+        );
+      });
+  };
 
   const switchNetwork = async () => {
     try {
       await window.ethereum.request({
-        method: 'wallet_switchEthereumChain',
+        method: "wallet_switchEthereumChain",
         params: [{ chainId: PARAMS[0].chainId }],
-      })
+      });
     } catch (switchError) {
-      console.log(switchError)
+      console.log(switchError);
       try {
         await window.ethereum.request({
-          method: 'wallet_addEthereumChain',
+          method: "wallet_addEthereumChain",
           params: PARAMS,
-        })
+        });
       } catch (addError) {
-        console.log(addError)
+        console.log(addError);
       }
     }
-  }
+  };
 
   const handleIncrement = () => {
-    setQuantity((prev) => (prev + 1 > MINT_MAX ? prev : prev + 1))
-  }
+    setQuantity((prev) => (prev + 1 > MINT_MAX ? prev : prev + 1));
+  };
 
   const handleDecrement = () => {
-    setQuantity((prev) => (prev - 1 < 1 ? prev : prev - 1))
-  }
+    setQuantity((prev) => (prev - 1 < 1 ? prev : prev - 1));
+  };
 
   const handleConnect = async () => {
-    if (!window.ethereum) return
+    if (!window.ethereum) return;
     return window.ethereum
-      .request({ method: 'eth_requestAccounts' })
+      .request({ method: "eth_requestAccounts" })
       .then(async () => {
-        setConnected(true)
-        setProvider(new ethers.providers.Web3Provider(window.ethereum))
+        setConnected(true);
+        setProvider(new ethers.providers.Web3Provider(window.ethereum));
         setSigner(
-          await new ethers.providers.Web3Provider(window.ethereum).getSigner(),
-        )
-      })
-  }
+          await new ethers.providers.Web3Provider(window.ethereum).getSigner()
+        );
+      });
+  };
 
   const handleMint = async () => {
     await handleConnect().then(async () => {
       await switchNetwork().then(async () => {
-        await contract.functions
+        await contract!.functions
           .mint(quantity, { value: ethers.utils.parseEther(totalPrice) })
           .then((r) => {
-            setTotalSupply((totalSupply) => totalSupply + 1)
+            setTotalSupply((totalSupply) => totalSupply + 1);
           })
           .catch((e) => {
-            console.log(e)
-          })
-      })
-    })
-  }
+            console.log(e);
+          });
+      });
+    });
+  };
 
   const fetchTotalSupply = useCallback(async () => {
     const totalSupply = await defaultContract.functions
       .totalSupply()
-      .then((r) => r[0])
-    setTotalSupply(totalSupply)
-  }, [])
+      .then((r) => r[0]);
+    setTotalSupply(totalSupply);
+  }, []);
 
   const fetchIsPublicMintEnabled = useCallback(async () => {
     const isPublicMintEnabled = await defaultContract.functions
       .isPublicMintEnabled()
-      .then((r) => r[0])
-    setIsPublicMintEnabled(isPublicMintEnabled)
-  }, [])
+      .then((r) => r[0]);
+    setIsPublicMintEnabled(isPublicMintEnabled);
+  }, []);
 
   useEffect(() => {
-    fetchTotalSupply()
-    fetchIsPublicMintEnabled()
-    preConnect()
-  }, [fetchIsPublicMintEnabled, fetchTotalSupply])
+    fetchTotalSupply();
+    fetchIsPublicMintEnabled();
+    preConnect();
+  }, [fetchIsPublicMintEnabled, fetchTotalSupply]);
 
   return (
     <div id="mint" className="p-5 py-20 bg-black flex flex-col mx-auto my-auto">
@@ -171,7 +179,7 @@ export const MintSection = memo(() => {
               <button
                 onClick={handleMint}
                 className={`bg-white text-slate-900 ${
-                  isMintable && 'bg-green-500'
+                  isMintable && "bg-green-500"
                 }`}
               >
                 Mint
@@ -187,5 +195,5 @@ export const MintSection = memo(() => {
         </div>
       </div>
     </div>
-  )
-})
+  );
+});
