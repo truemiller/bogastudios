@@ -2,12 +2,13 @@ export const Hero = () => {
   return (
     <div className="flex p-5 py-40 bg-opacity-50  shadow-xl">
       <div className="container mx-auto text-center">
-        <h1 className="my-auto">BOGA Studios</h1>
-        {/* <img
-          src="https://www.thisiscolossal.com/wp-content/uploads/2018/04/agif2opt.gif"
+        <h1 className="mb-40">BOGA Studios</h1>
+        <img
+          src="/img/gif/dogs.gif"
           alt=""
-          className="mx-auto"
-        /> */}
+          width={400}
+          className={'rounded-full my-5 mx-auto'}
+        />
       </div>
     </div>
   )
