@@ -1,27 +1,31 @@
-import { useMemo, useState, useEffect } from 'react'
+import { useMemo, useState, useEffect, useCallback, memo } from 'react'
 import abi from '../abi/abi.json'
 import { ethers } from 'ethers'
-
-const CONTRACT = '0x'
-const RPC = 'https://rpc.ankr.com/eth'
-const MINT_PRICE = 0.01
-const MINT_MAX = 200
+import {
+  MINT_MAX,
+  RPC,
+  CONTRACT,
+  MINT_PRICE,
+  CHAIN_ID,
+  CHAIN_NAME,
+  BLOCK_EXPLORER,
+} from '../constants/config'
 
 const PARAMS = [
   {
-    chainId: '0x' + (1).toString(16),
-    chainName: 'Ethereum',
+    chainId: CHAIN_ID,
+    chainName: CHAIN_NAME,
     rpcUrls: [RPC],
-    blockExplorer: ['https://etherscan.io/'],
+    blockExplorer: [BLOCK_EXPLORER],
   },
 ]
 
-const defaultProvider = new ethers.JsonRpcProvider(RPC)
+const defaultProvider = new ethers.providers.JsonRpcProvider(RPC)
 const defaultContract = new ethers.Contract(CONTRACT, abi, defaultProvider)
 
 const latestMintName = 'Dogs'
 
-export const MintSection = () => {
+export const MintSection = memo(() => {
   const [connected, setConnected] = useState(false)
   const [provider, setProvider] = useState(null)
   const [signer, setSigner] = useState(null)
@@ -43,51 +47,17 @@ export const MintSection = () => {
     return contract
   }, [connected, provider, signer])
 
-  const connect = async () => {
-    if (!window.ethereum) return
-    return window.ethereum
-      .request({ method: 'eth_requestAccounts' })
-      .then(async () => {
-        setConnected(true)
-        setProvider(new ethers.JsonRpcProvider(window.ethereum))
-        setSigner(
-          await new ethers.JsonRpcProvider(window.ethereum)
-            .getSigner()
-            .then((r) => r),
-        )
-      })
-  }
-
   const preConnect = async () => {
-    if (!window.ethereum) return
+    if (!window?.ethereum) return
     await window.ethereum
       .request({ method: 'eth_accounts' })
       .then(async (r) => {
         setConnected(!!r[0])
-        setProvider(new ethers.JsonRpcProvider(window.ethereum))
+        setProvider(new ethers.providers.Web3Provider(window.ethereum))
         setSigner(
-          await new ethers.JsonRpcProvider(window.ethereum)
-            .getSigner()
-            .then((r) => r),
+          await new ethers.providers.Web3Provider(window.ethereum).getSigner(),
         )
       })
-  }
-
-  const mint = async () => {
-    await contract.functions
-      .mint()
-      .then((r) => {
-        setTotalSupply((totalSupply) => totalSupply + 1)
-      })
-      .catch((e) => {
-        console.log(e)
-      })
-  }
-
-  const fetchTotalSupply = async () => {
-    await defaultContract.functions.totalSupply().then((r) => {
-      setTotalSupply(parseFloat(r[0].toString()))
-    })
   }
 
   const switchNetwork = async () => {
@@ -109,29 +79,62 @@ export const MintSection = () => {
     }
   }
 
+  const handleIncrement = () => {
+    setQuantity((prev) => (prev + 1 > MINT_MAX ? prev : prev + 1))
+  }
+
+  const handleDecrement = () => {
+    setQuantity((prev) => (prev - 1 < 1 ? prev : prev - 1))
+  }
+
   const handleConnect = async () => {
-    await connect()
+    if (!window.ethereum) return
+    return window.ethereum
+      .request({ method: 'eth_requestAccounts' })
+      .then(async () => {
+        setConnected(true)
+        setProvider(new ethers.providers.Web3Provider(window.ethereum))
+        setSigner(
+          await new ethers.providers.Web3Provider(window.ethereum).getSigner(),
+        )
+      })
   }
 
   const handleMint = async () => {
     await handleConnect().then(async () => {
       await switchNetwork().then(async () => {
-        await mint()
+        await contract.functions
+          .mint(quantity, { value: ethers.utils.parseEther(totalPrice) })
+          .then((r) => {
+            setTotalSupply((totalSupply) => totalSupply + 1)
+          })
+          .catch((e) => {
+            console.log(e)
+          })
       })
     })
   }
 
-  const fetchIsPublicMintEnabled = async () => {
-    await defaultContract.functions
+  const fetchTotalSupply = useCallback(async () => {
+    const totalSupply = await defaultContract.functions
+      .totalSupply()
+      .then((r) => r[0])
+    setTotalSupply(totalSupply)
+  }, [])
+
+  const fetchIsPublicMintEnabled = useCallback(async () => {
+    const isPublicMintEnabled = await defaultContract.functions
       .isPublicMintEnabled()
-      .then((r) => setIsPublicMintEnabled(r[0]))
-  }
+      .then((r) => r[0])
+    setIsPublicMintEnabled(isPublicMintEnabled)
+  }, [])
 
   useEffect(() => {
     fetchTotalSupply()
     fetchIsPublicMintEnabled()
     preConnect()
-  }, [])
+  }, [fetchIsPublicMintEnabled, fetchTotalSupply])
+
   return (
     <div id="mint" className="p-5 py-20 bg-black flex flex-col mx-auto my-auto">
       <div className="container mx-auto text-center">
@@ -156,21 +159,11 @@ export const MintSection = () => {
               disabled
             />
             <div className="flex justify-between">
-              <button
-                className="bg-red-600"
-                onClick={() => {
-                  setQuantity((prev) => (prev - 1 < 0 ? prev : prev - 1))
-                }}
-              >
+              <button className="bg-red-600" onClick={handleDecrement}>
                 -
               </button>
               <span className="text-4xl font-extrabold">{quantity}</span>
-              <button
-                className="bg-green-600"
-                onClick={() => {
-                  setQuantity((prev) => (prev + 1 > MINT_MAX ? prev : prev + 1))
-                }}
-              >
+              <button className="bg-green-600" onClick={handleIncrement}>
                 +
               </button>
             </div>
@@ -195,4 +188,4 @@ export const MintSection = () => {
       </div>
     </div>
   )
-}
+})

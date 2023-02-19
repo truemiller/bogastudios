@@ -1,4 +1,6 @@
-export const About = () => (
+import { memo } from 'react'
+
+export const About = memo(() => (
   <section
     className="flex p-5 py-40  bg-opacity-50 text-white shadow-xl"
     id="about"
@@ -15,4 +17,4 @@ export const About = () => (
       </div>
     </div>
   </section>
-)
+))

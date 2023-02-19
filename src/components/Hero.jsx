@@ -1,4 +1,6 @@
-export const Hero = () => {
+import { memo } from 'react'
+
+export const Hero = memo(() => {
   return (
     <div className="flex p-5 py-40 bg-opacity-50  shadow-xl">
       <div className="container mx-auto text-center">
@@ -12,6 +14,6 @@ export const Hero = () => {
       </div>
     </div>
   )
-}
+})
 
 export default Hero

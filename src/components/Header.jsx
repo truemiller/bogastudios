@@ -1,6 +1,7 @@
+import { memo } from 'react'
 import { FaHome, FaTwitter, FaDiscord, FaShip } from 'react-icons/fa'
 
-export const Header = () => {
+export const Header = memo(() => {
   return (
     <nav className="w-screen bg-black p-3 text-white shadow-xl">
       <div className="container mx-auto flex">
@@ -38,4 +39,4 @@ export const Header = () => {
       </div>
     </nav>
   )
-}
+})
