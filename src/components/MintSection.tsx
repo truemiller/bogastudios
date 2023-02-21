@@ -153,6 +153,7 @@ export const MintSection = memo(() => {
           className=" bg-opacity-75 backdrop-blur-xl p-5 rounded-xl border-2 mx-auto"
           style={{ width: 700 }}
         >
+          <em>Drop Date: 4th March 2023, 14:00 UTC</em>
           <div className="p-1 font-extrabold">
             Mint BOGA {MINT_NAME} ({totalSupply}/{MINT_MAX})
           </div>
