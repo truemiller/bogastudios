@@ -1,9 +1,9 @@
-export const RPC: string = 'https://api.avax-test.network/ext/bc/C/rpc'
+export const RPC: string = 'https://rpc.ankr.com/eth'
 export const CHAIN_ID: string = '0x' + (1).toString(16)
 export const CHAIN_NAME: string = 'Ethereum'
 export const BLOCK_EXPLORER: string = 'https://etherscan.io/'
 
-export const CONTRACT: string = '0x'
+export const CONTRACT: string = '0xe8D218035980c0Afe1d1060B0037e6f313D922a3'
 
 export const MINT_MAX: number = 200
 export const MINT_PRICE: number = 0.01
