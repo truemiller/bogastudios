@@ -4,7 +4,7 @@ import { FaAngleDown } from "react-icons/fa";
 export const Hero = memo(() => {
   return (
     <>
-      <div className="flex p-5 py-80 bg-opacity-50  shadow-xl">
+      <div className="flex p-5 py-80 bg-opacity-50 shadow-xl">
         <div className="container mx-auto text-center">
           <h1 className="mb-5">BOGA Studios</h1>
           <span className="block mb-5">Presents</span>
