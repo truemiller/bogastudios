@@ -108,17 +108,15 @@ export const MintSection = memo(() => {
   };
 
   const handleMint = async () => {
-    await handleConnect().then(async () => {
-      await switchNetwork().then(async () => {
-        await contract!.functions
-          .mint(quantity, { value: ethers.utils.parseEther(totalPrice) })
-          .then((r) => {
-            setTotalSupply((totalSupply) => totalSupply + 1);
-          })
-          .catch((e) => {
-            console.log(e);
-          });
-      });
+    await switchNetwork().then(async () => {
+      await contract!.functions
+        .mint(quantity, { value: ethers.utils.parseEther(totalPrice) })
+        .then((r) => {
+          setTotalSupply((totalSupply) => totalSupply + 1);
+        })
+        .catch((e) => {
+          console.log(e);
+        });
     });
   };
 
@@ -175,15 +173,20 @@ export const MintSection = memo(() => {
                 +
               </button>
             </div>
-            {isMintable && (
-              <button
-                onClick={handleMint}
-                className={`bg-white text-slate-900 ${
-                  isMintable && "bg-green-500"
-                }`}
-              >
-                Mint
-              </button>
+
+            {connected ? (
+              isMintable && (
+                <button
+                  onClick={handleMint}
+                  className={`bg-white text-slate-900 ${
+                    isMintable && "bg-green-500"
+                  }`}
+                >
+                  Mint
+                </button>
+              )
+            ) : (
+              <button onClick={handleConnect}>Connect Wallet</button>
             )}
 
             <ul className="text-sm">

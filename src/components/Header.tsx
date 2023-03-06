@@ -1,9 +1,9 @@
-import { memo } from 'react'
-import { FaHome, FaTwitter, FaDiscord, FaShip } from 'react-icons/fa'
+import { memo } from "react";
+import { FaHome, FaTwitter, FaDiscord, FaShip } from "react-icons/fa";
 
 export const Header = memo(() => {
   return (
-    <nav className="w-screen bg-black p-3 text-white shadow-xl">
+    <nav className=" bg-black p-3 text-white shadow-xl">
       <div className="container mx-auto flex">
         <div className="flex">
           <a href="/" className="mr-5 flex text-white">
@@ -29,14 +29,14 @@ export const Header = memo(() => {
           </a>
         </div>
         <div className="flex ml-auto">
-          <a href={'#about'} className="mr-5">
+          <a href={"#about"} className="mr-5">
             About
           </a>
-          <a href={'#mint'} className="mr-5">
+          <a href={"#mint"} className="mr-5">
             Mint
           </a>
         </div>
       </div>
     </nav>
-  )
-})
+  );
+});
